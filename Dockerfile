@@ -2,14 +2,10 @@ FROM nginx:alpine
 
 WORKDIR /usr/share/nginx/html
 
-# Copy HTML file
+# Copy HTML file and nginx config
 COPY index.html .
-
-# Copy nginx config file
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose port
+# Expose port and start nginx
 EXPOSE 80
-
-# Start nginx
 CMD ["nginx", "-g", "daemon off;"]
