@@ -1,16 +1,19 @@
 {
-  "name": "coolify-test-project",
-  "version": "1.0.0",
-  "description": "A simple project to test Coolify deployment capabilities",
-  "main": "index.html",
-  "scripts": {
-    "build": "mkdir -p dist && cp -r *.html *.css *.js dist/"
-  },
-  "keywords": [
-    "coolify",
-    "test",
-    "static"
-  ],
-  "author": "",
-  "license": "MIT"
-}
+    "name": "coolify-test-project",
+    "version": "1.0.0",
+    "description": "A simple project to test Coolify deployment capabilities",
+    "main": "index.html",
+    "engines": {
+      "node": ">=16.0.0"
+    },
+    "scripts": {
+      "build": "echo 'No build step required'"
+    },
+    "keywords": [
+      "coolify",
+      "test",
+      "static"
+    ],
+    "author": "",
+    "license": "MIT"
+  }

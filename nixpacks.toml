@@ -2,7 +2,7 @@
 nixPkgs = ["nginx"]
 
 [phases.build]
-cmds = ["mkdir -p dist", "cp -r *.html dist/", "cp -r nginx.conf dist/"]
+cmds = ["mkdir -p dist", "cp *.html dist/"]
 
 [start]
-cmd = "nginx -c /app/nginx.conf -g 'daemon off;'"
+cmd = "nginx -c /app/nginx.conf"
