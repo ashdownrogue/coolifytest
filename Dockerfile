@@ -1,12 +1,14 @@
 FROM nginx:alpine
 
-# Copy the HTML file
-COPY index.html /usr/share/nginx/html/
+WORKDIR /usr/share/nginx/html
 
-# Copy the nginx configuration
+# Copy HTML file
+COPY index.html .
+
+# Copy nginx config file
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose port 80
+# Expose port
 EXPOSE 80
 
 # Start nginx

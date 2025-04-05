@@ -1,8 +1,0 @@
-[phases.setup]
-nixPkgs = ["nginx"]
-
-[phases.build]
-cmds = ["mkdir -p dist", "cp *.html dist/"]
-
-[start]
-cmd = "nginx -c /app/nginx.conf"
