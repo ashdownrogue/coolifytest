@@ -12,5 +12,5 @@ RUN ls -la /usr/share/nginx/html/
 RUN cat /etc/nginx/nginx.conf
 
 # Expose port and start nginx
-EXPOSE 8111
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
