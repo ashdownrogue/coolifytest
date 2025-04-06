@@ -65,6 +65,7 @@
         .card-container {
             perspective: 1000px;
             width: var(--card-width);
+            margin-bottom: 1.5rem;
         }
         
         .card {
@@ -72,11 +73,10 @@
             height: var(--card-height);
             border-radius: 8px;
             box-shadow: var(--card-shadow);
-            padding: 1.5rem;
             display: flex;
             flex-direction: column;
             position: relative;
-            transition: transform 0.3s ease;
+            transition: transform 0.6s;
             transform-style: preserve-3d;
             cursor: default;
         }
@@ -90,16 +90,26 @@
             padding: 1.5rem;
             backface-visibility: hidden;
             border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .today-card .card-front {
+            background-color: var(--today-card-color);
+        }
+        
+        .next-card .card-front {
+            background-color: var(--next-card-color);
+        }
+        
+        .someday-card .card-front {
+            background-color: var(--someday-card-color);
         }
         
         .card-back {
             transform: rotateY(180deg);
-            background-image: 
-                linear-gradient(to right, transparent 20px, #ddd 20px, #ddd 21px, transparent 21px),
-                linear-gradient(#eee 1px, transparent 1px);
-            background-size: 100% 21px;
-            padding-left: 25px;
-            padding-top: 21px;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
         }
         
         .flipped {
@@ -130,21 +140,6 @@
             background: #ddd;
         }
         
-        .today-card {
-            background-color: var(--today-card-color);
-            z-index: 3;
-        }
-        
-        .next-card {
-            background-color: var(--next-card-color);
-            z-index: 2;
-        }
-        
-        .someday-card {
-            background-color: var(--someday-card-color);
-            z-index: 1;
-        }
-        
         .task-list {
             list-style: none;
             flex-grow: 1;
@@ -152,6 +147,7 @@
             flex-direction: column;
             gap: 10px;
             overflow-y: auto;
+            margin-bottom: 1rem;
         }
         
         .task-item {
@@ -239,7 +235,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 10px;
+            margin-top: auto;
         }
         
         .add-task-btn, .clear-completed-btn {
@@ -252,7 +248,7 @@
             text-align: left;
         }
         
-        .add-task-btn:hover, .clear-completed-btn:hover {
+        .add-task-btn:hover, .clear-completed-btn:hover, .flip-btn:hover {
             color: var(--text-color);
         }
         
@@ -266,22 +262,49 @@
             cursor: pointer;
             font-size: 0.8rem;
             color: #999;
-            position: absolute;
-            bottom: 1rem;
-            right: 1rem;
             display: flex;
             align-items: center;
             gap: 5px;
         }
         
-        .flip-btn:hover {
-            color: var(--text-color);
+        .notes-area {
+            width: 100%;
+            height: calc(100% - 100px);
+            background-color: transparent;
+            border: none;
+            resize: none;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            padding: 0;
+            color: #333;
+            outline: none;
+            background-image: 
+                linear-gradient(#f5f5f5 23px, #ddd 23px, #ddd 24px, #f5f5f5 24px),
+                linear-gradient(to right, transparent, transparent 20px, #f5f5f5 20px);
+            background-size: 100% 24px;
+            line-height: 24px;
+            padding-top: 4px;
+            padding-left: 20px;
+        }
+        
+        .notes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .notes-title {
+            font-size: 1.2rem;
+            font-weight: 500;
         }
         
         .card-info {
             text-align: center;
             width: var(--card-width);
-            margin-top: 1rem;
             color: #666;
             font-size: 0.8rem;
         }
@@ -355,7 +378,6 @@
                 <div class="card-front">
                     <div class="card-title">
                         <span>Today</span>
-                        <div class="card-date"></div>
                     </div>
                     <div class="card-signals">
                         <div class="card-signal"></div>
@@ -368,16 +390,25 @@
                     <div class="card-actions">
                         <button class="add-task-btn" data-card="today">+ Add task</button>
                         <button class="clear-completed-btn" data-card="today">Clear completed</button>
+                        <button class="flip-btn" data-card="today">
+                            <span>NOTES</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 12H21M21 12L14 5M21 12L14 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
                     </div>
-                    <button class="flip-btn" data-card="today">
-                        <span>NOTES</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 12H21M21 12L14 5M21 12L14 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
                 </div>
                 <div class="card-back">
-                    <!-- Empty back for notes -->
+                    <div class="notes-header">
+                        <span class="notes-title">Today Notes</span>
+                        <button class="flip-btn" data-card="today">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M21 12H3M3 12L10 5M3 12L10 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>TASKS</span>
+                        </button>
+                    </div>
+                    <textarea class="notes-area" data-card="today" placeholder="Add notes here..."></textarea>
                 </div>
             </div>
             <div class="card-info">
@@ -402,16 +433,25 @@
                     <div class="card-actions">
                         <button class="add-task-btn" data-card="next">+ Add task</button>
                         <button class="clear-completed-btn" data-card="next">Clear completed</button>
+                        <button class="flip-btn" data-card="next">
+                            <span>NOTES</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 12H21M21 12L14 5M21 12L14 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
                     </div>
-                    <button class="flip-btn" data-card="next">
-                        <span>NOTES</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 12H21M21 12L14 5M21 12L14 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
                 </div>
                 <div class="card-back">
-                    <!-- Empty back for notes -->
+                    <div class="notes-header">
+                        <span class="notes-title">Next Notes</span>
+                        <button class="flip-btn" data-card="next">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M21 12H3M3 12L10 5M3 12L10 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>TASKS</span>
+                        </button>
+                    </div>
+                    <textarea class="notes-area" data-card="next" placeholder="Add notes here..."></textarea>
                 </div>
             </div>
             <div class="card-info">
@@ -436,16 +476,25 @@
                     <div class="card-actions">
                         <button class="add-task-btn" data-card="someday">+ Add task</button>
                         <button class="clear-completed-btn" data-card="someday">Clear completed</button>
+                        <button class="flip-btn" data-card="someday">
+                            <span>NOTES</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 12H21M21 12L14 5M21 12L14 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
                     </div>
-                    <button class="flip-btn" data-card="someday">
-                        <span>NOTES</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 12H21M21 12L14 5M21 12L14 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
                 </div>
                 <div class="card-back">
-                    <!-- Empty back for notes -->
+                    <div class="notes-header">
+                        <span class="notes-title">Someday Notes</span>
+                        <button class="flip-btn" data-card="someday">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M21 12H3M3 12L10 5M3 12L10 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>TASKS</span>
+                        </button>
+                    </div>
+                    <textarea class="notes-area" data-card="someday" placeholder="Add notes here..."></textarea>
                 </div>
             </div>
             <div class="card-info">
@@ -492,13 +541,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Set current date
-            const today = new Date();
-            document.querySelector('.card-date').textContent = today.toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric' 
-            });
-            
             // Initialize data
             let tasks = JSON.parse(localStorage.getItem('analog-tasks')) || {
                 today: [],
@@ -506,10 +548,29 @@
                 someday: []
             };
             
+            // Initialize notes
+            let notes = JSON.parse(localStorage.getItem('analog-notes')) || {
+                today: '',
+                next: '',
+                someday: ''
+            };
+            
             // Render initial tasks
             renderTasks('today');
             renderTasks('next');
             renderTasks('someday');
+            
+            // Load notes
+            document.querySelectorAll('.notes-area').forEach(textarea => {
+                const cardType = textarea.dataset.card;
+                textarea.value = notes[cardType] || '';
+                
+                // Save notes on change
+                textarea.addEventListener('input', function() {
+                    notes[cardType] = this.value;
+                    saveNotes();
+                });
+            });
             
             // Handle card flipping
             document.querySelectorAll('.flip-btn').forEach(btn => {
@@ -693,6 +754,11 @@
             // Save tasks to localStorage
             function saveTasks() {
                 localStorage.setItem('analog-tasks', JSON.stringify(tasks));
+            }
+            
+            // Save notes to localStorage
+            function saveNotes() {
+                localStorage.setItem('analog-notes', JSON.stringify(notes));
             }
         });
     </script>
