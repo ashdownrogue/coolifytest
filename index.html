@@ -93,21 +93,20 @@
             overflow: hidden;
         }
         
-        .today-card .card-front {
+        .today-card .card-front, .today-card .card-back {
             background-color: var(--today-card-color);
         }
         
-        .next-card .card-front {
+        .next-card .card-front, .next-card .card-back {
             background-color: var(--next-card-color);
         }
         
-        .someday-card .card-front {
+        .someday-card .card-front, .someday-card .card-back {
             background-color: var(--someday-card-color);
         }
         
         .card-back {
             transform: rotateY(180deg);
-            background-color: #f5f5f5;
             display: flex;
             flex-direction: column;
         }
@@ -279,9 +278,27 @@
             padding: 0;
             color: #333;
             outline: none;
+        }
+        
+        .today-card .notes-area {
             background-image: 
-                linear-gradient(#f5f5f5 23px, #ddd 23px, #ddd 24px, #f5f5f5 24px),
-                linear-gradient(to right, transparent, transparent 20px, #f5f5f5 20px);
+                linear-gradient(var(--today-card-color) 23px, #ddd 23px, #ddd 24px, var(--today-card-color) 24px),
+                linear-gradient(to right, transparent, transparent 20px, var(--today-card-color) 20px);
+        }
+        
+        .next-card .notes-area {
+            background-image: 
+                linear-gradient(var(--next-card-color) 23px, #ddd 23px, #ddd 24px, var(--next-card-color) 24px),
+                linear-gradient(to right, transparent, transparent 20px, var(--next-card-color) 20px);
+        }
+        
+        .someday-card .notes-area {
+            background-image: 
+                linear-gradient(var(--someday-card-color) 23px, #ddd 23px, #ddd 24px, var(--someday-card-color) 24px),
+                linear-gradient(to right, transparent, transparent 20px, var(--someday-card-color) 20px);
+        }
+        
+        .notes-area {
             background-size: 100% 24px;
             line-height: 24px;
             padding-top: 4px;
@@ -536,7 +553,7 @@
 
     <footer>
         <p>In a world full of digital distractions, some things are simply better – Analog.</p>
-        <p><small>This is a digital homage to <a href="https://ugmonk.com/pages/analog" target="_blank">Ugmonk's Analog</a> productivity system.</small></p>
+        <p><small>This is a digital homage to <a href="https://ugmonk.com/products/analog-the-simplest-productivity-system" target="_blank">Ugmonk's Analog</a> productivity system.</small></p>
     </footer>
 
     <script>
