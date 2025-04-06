@@ -3,603 +3,635 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clear-Style Todo App</title>
+    <title>Analog - The Simplest Productivity System</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            transition: background-color 0.3s, color 0.3s;
+            font-family: 'SF Mono', SFMono-Regular, ui-monospace, 'DejaVu Sans Mono', Menlo, Consolas, monospace;
         }
         
         :root {
-            --bg-gradient-light: linear-gradient(135deg, #ff5f6d, #ffc371);
-            --bg-gradient-dark: linear-gradient(135deg, #434343, #000000);
-            --text-color-light: white;
-            --text-color-dark: white;
-            --item-bg-light: rgba(255, 255, 255, 0.1);
-            --item-bg-dark: rgba(255, 255, 255, 0.05);
-            --priority-high-light: rgba(255, 100, 100, 0.3);
-            --priority-high-dark: rgba(255, 100, 100, 0.2);
-            --priority-medium-light: rgba(255, 165, 0, 0.3);
-            --priority-medium-dark: rgba(255, 165, 0, 0.2);
-            --priority-low-light: rgba(100, 255, 100, 0.3);
-            --priority-low-dark: rgba(100, 255, 100, 0.2);
-            --input-bg-light: rgba(255, 255, 255, 0.2);
-            --input-bg-dark: rgba(255, 255, 255, 0.1);
+            --today-card-color: #fff;
+            --next-card-color: #f5f5f0;
+            --someday-card-color: #e0d9c5;
+            --text-color: #333;
+            --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --card-width: 320px;
+            --card-height: 480px;
         }
         
         body {
+            background-color: #f7f7f7;
             min-height: 100vh;
-            padding: 0;
-            margin: 0;
+            padding: 2rem;
+            color: var(--text-color);
             line-height: 1.6;
-        }
-        
-        body.light-mode {
-            background: var(--bg-gradient-light);
-            color: var(--text-color-light);
-        }
-        
-        body.dark-mode {
-            background: var(--bg-gradient-dark);
-            color: var(--text-color-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         header {
-            padding: 2rem;
             text-align: center;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 1000px;
         }
         
         header h1 {
-            font-size: 2.5rem;
-            font-weight: 300;
-            letter-spacing: 1px;
+            font-size: 2rem;
+            font-weight: 500;
             margin-bottom: 0.5rem;
+            letter-spacing: 1px;
         }
         
         header p {
-            opacity: 0.8;
-            font-size: 1rem;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 1.5rem;
-            font-size: 0.9rem;
-            opacity: 0.7;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-        
-        .todo-container {
-            max-width: 500px;
+            color: #666;
+            max-width: 600px;
             margin: 0 auto;
-            padding: 0 1rem;
         }
         
-        .todo-input-container {
-            position: relative;
-            margin-bottom: 2rem;
-        }
-        
-        .todo-input {
+        main {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
             width: 100%;
-            padding: 1rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            outline: none;
-            backdrop-filter: blur(10px);
+            max-width: 1200px;
         }
         
-        .light-mode .todo-input {
-            background: var(--input-bg-light);
-            color: var(--text-color-light);
-        }
-        
-        .dark-mode .todo-input {
-            background: var(--input-bg-dark);
-            color: var(--text-color-dark);
-        }
-        
-        .light-mode .todo-input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-        
-        .dark-mode .todo-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-        
-        .todo-list {
-            list-style: none;
+        .card-container {
             perspective: 1000px;
+            width: var(--card-width);
         }
         
-        .todo-item {
-            margin-bottom: 0.5rem;
-            padding: 1rem;
+        .card {
+            width: var(--card-width);
+            height: var(--card-height);
             border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
             display: flex;
-            align-items: center;
-            transition: all 0.3s ease;
+            flex-direction: column;
             position: relative;
-            overflow: hidden;
-            transform-origin: center left;
-            animation: fadeIn 0.3s forwards;
-            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+            transform-style: preserve-3d;
+            cursor: default;
         }
         
-        .light-mode .todo-item {
-            background: var(--item-bg-light);
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            padding: 1.5rem;
+            backface-visibility: hidden;
+            border-radius: 8px;
         }
         
-        .dark-mode .todo-item {
-            background: var(--item-bg-dark);
+        .card-back {
+            transform: rotateY(180deg);
+            background-image: 
+                linear-gradient(to right, transparent 20px, #ddd 20px, #ddd 21px, transparent 21px),
+                linear-gradient(#eee 1px, transparent 1px);
+            background-size: 100% 21px;
+            padding-left: 25px;
+            padding-top: 21px;
         }
         
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .flipped {
+            transform: rotateY(180deg);
         }
         
-        .light-mode .todo-item.priority-high {
-            background: var(--priority-high-light);
-        }
-        
-        .dark-mode .todo-item.priority-high {
-            background: var(--priority-high-dark);
-        }
-        
-        .light-mode .todo-item.priority-medium {
-            background: var(--priority-medium-light);
-        }
-        
-        .dark-mode .todo-item.priority-medium {
-            background: var(--priority-medium-dark);
-        }
-        
-        .light-mode .todo-item.priority-low {
-            background: var(--priority-low-light);
-        }
-        
-        .dark-mode .todo-item.priority-low {
-            background: var(--priority-low-dark);
-        }
-        
-        .todo-item.completed {
-            text-decoration: line-through;
-            opacity: 0.5;
-        }
-        
-        .todo-text {
-            flex: 1;
-            font-size: 1.1rem;
-            padding: 0 0.5rem;
-            word-break: break-word;
-        }
-        
-        .todo-actions {
-            display: flex;
-            align-items: center;
-        }
-        
-        .todo-actions button {
-            background: none;
-            border: none;
-            color: white;
+        .card-title {
             font-size: 1.2rem;
-            cursor: pointer;
-            opacity: 0.7;
-            margin-left: 0.5rem;
-            transition: opacity 0.2s;
-        }
-        
-        .todo-actions button:hover {
-            opacity: 1;
-        }
-        
-        .priority-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        
-        .priority-high .priority-indicator {
-            background-color: #ff4d4d;
-        }
-        
-        .priority-medium .priority-indicator {
-            background-color: #ffa500;
-        }
-        
-        .priority-low .priority-indicator {
-            background-color: #4caf50;
-        }
-        
-        .todo-stats {
-            margin-top: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
             display: flex;
             justify-content: space-between;
-            font-size: 0.9rem;
         }
         
-        .light-mode .todo-stats {
-            color: rgba(255, 255, 255, 0.8);
-        }
-        
-        .dark-mode .todo-stats {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        .clear-completed {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        
-        .light-mode .clear-completed {
-            color: white;
-            opacity: 0.8;
-        }
-        
-        .dark-mode .clear-completed {
-            color: white;
-            opacity: 0.7;
-        }
-        
-        .clear-completed:hover {
-            opacity: 1;
-            text-decoration: underline;
-        }
-        
-        .priority-selector {
+        .card-signals {
             position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
+            top: 1.5rem;
+            right: 1.5rem;
             display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
         
-        .priority-btn {
+        .card-signal {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ddd;
+        }
+        
+        .today-card {
+            background-color: var(--today-card-color);
+            z-index: 3;
+        }
+        
+        .next-card {
+            background-color: var(--next-card-color);
+            z-index: 2;
+        }
+        
+        .someday-card {
+            background-color: var(--someday-card-color);
+            z-index: 1;
+        }
+        
+        .task-list {
+            list-style: none;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .task-indicator {
             width: 18px;
             height: 18px;
             border-radius: 50%;
-            margin-left: 5px;
-            cursor: pointer;
-            border: 2px solid rgba(255, 255, 255, 0.4);
-            transition: transform 0.2s, border 0.2s;
-        }
-        
-        .priority-btn:hover {
-            transform: scale(1.2);
-            border: 2px solid white;
-        }
-        
-        .priority-btn.high {
-            background-color: #ff4d4d;
-        }
-        
-        .priority-btn.medium {
-            background-color: #ffa500;
-        }
-        
-        .priority-btn.low {
-            background-color: #4caf50;
-        }
-        
-        .swipe-hint {
-            text-align: center;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-        }
-        
-        .light-mode .swipe-hint {
-            color: rgba(255, 255, 255, 0.6);
-        }
-        
-        .dark-mode .swipe-hint {
-            color: rgba(255, 255, 255, 0.5);
-        }
-        
-        .theme-toggle {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            z-index: 10;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            border: 1px solid #999;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.3s;
+            cursor: pointer;
+            flex-shrink: 0;
+            position: relative;
         }
         
-        .light-mode .theme-toggle {
-            color: white;
-            background-color: rgba(0, 0, 0, 0.1);
+        .task-text {
+            flex-grow: 1;
+            font-size: 0.95rem;
+            outline: none;
+            background: none;
+            border: none;
+            border-bottom: 1px solid transparent;
+            transition: border 0.2s;
         }
         
-        .dark-mode .theme-toggle {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.1);
+        .task-text:focus {
+            border-bottom: 1px solid #ddd;
         }
         
-        .theme-toggle:hover {
-            background-color: rgba(255, 255, 255, 0.2);
+        .task-text.completed {
+            text-decoration: line-through;
+            color: #999;
         }
         
-        @media (max-width: 600px) {
-            header h1 {
-                font-size: 2rem;
+        .task-status {
+            position: absolute;
+        }
+        
+        .task-status.completed {
+            background-color: #333;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+        
+        .task-status.in-progress {
+            background-color: #333;
+            width: 50%;
+            height: 100%;
+            border-radius: 50% 0 0 50%;
+        }
+        
+        .task-status.delegated {
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .task-status.delegated::after {
+            content: "→";
+            position: absolute;
+            left: 4px;
+        }
+        
+        .task-status.appointment {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .task-status.appointment::after {
+            content: "+";
+            position: absolute;
+            left: 4px;
+            top: -4px;
+        }
+        
+        .add-task-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #999;
+            padding: 5px;
+            margin-top: 5px;
+            text-align: left;
+        }
+        
+        .add-task-btn:hover {
+            color: var(--text-color);
+        }
+        
+        .flip-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: #999;
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .flip-btn:hover {
+            color: var(--text-color);
+        }
+        
+        .card-info {
+            text-align: center;
+            width: var(--card-width);
+            margin-top: 1rem;
+            color: #666;
+            font-size: 0.8rem;
+        }
+        
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #666;
+            width: 100%;
+            padding: 1rem;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            z-index: 10;
+            display: none;
+        }
+        
+        .dropdown-menu.active {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .dropdown-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .status-icon {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        @media (max-width: 1050px) {
+            main {
+                flex-direction: column;
+                align-items: center;
             }
             
-            .todo-item {
-                padding: 0.8rem;
-            }
-            
-            .todo-text {
-                font-size: 1rem;
-            }
-            
-            .theme-toggle {
-                top: 0.5rem;
-                right: 0.5rem;
+            .card-container {
+                margin-bottom: 2rem;
             }
         }
     </style>
 </head>
-<body class="light-mode">
-    <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark/light mode">
-        🌙
-    </button>
-
+<body>
     <header>
-        <h1>CLEAR</h1>
-        <p>Simple, gesture-based todo list</p>
+        <h1>ANALOG</h1>
+        <p>The Simplest Productivity System</p>
     </header>
 
-    <main class="todo-container">
-        <div class="todo-input-container">
-            <input type="text" id="todoInput" class="todo-input" placeholder="Add a new task...">
-            <div class="priority-selector">
-                <div class="priority-btn high" data-priority="high"></div>
-                <div class="priority-btn medium" data-priority="medium"></div>
-                <div class="priority-btn low" data-priority="low"></div>
+    <main>
+        <div class="card-container">
+            <div class="card today-card" id="today-card">
+                <div class="card-front">
+                    <div class="card-title">
+                        <span>Today</span>
+                        <div class="card-date"></div>
+                    </div>
+                    <div class="card-signals">
+                        <div class="card-signal"></div>
+                        <div class="card-signal"></div>
+                        <div class="card-signal"></div>
+                    </div>
+                    <ul class="task-list" id="today-tasks">
+                        <!-- Tasks will be added here dynamically -->
+                    </ul>
+                    <button class="add-task-btn" data-card="today">+ Add task</button>
+                    <button class="flip-btn" data-card="today">
+                        <span>NOTES</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 12H21M21 12L14 5M21 12L14 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="card-back">
+                    <!-- Empty back for notes -->
+                </div>
+            </div>
+            <div class="card-info">
+                Write up to 10 tasks on a Today card. Mark each task as completed, in-progress, or delegated.
             </div>
         </div>
 
-        <ul id="todoList" class="todo-list">
-            <!-- Todo items will be added here dynamically -->
-        </ul>
-
-        <div class="swipe-hint">
-            <p>Swipe left to delete • Tap to complete</p>
+        <div class="card-container">
+            <div class="card next-card" id="next-card">
+                <div class="card-front">
+                    <div class="card-title">
+                        <span>Next</span>
+                    </div>
+                    <div class="card-signals">
+                        <div class="card-signal"></div>
+                        <div class="card-signal"></div>
+                        <div class="card-signal"></div>
+                    </div>
+                    <ul class="task-list" id="next-tasks">
+                        <!-- Tasks will be added here dynamically -->
+                    </ul>
+                    <button class="add-task-btn" data-card="next">+ Add task</button>
+                    <button class="flip-btn" data-card="next">
+                        <span>NOTES</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 12H21M21 12L14 5M21 12L14 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="card-back">
+                    <!-- Empty back for notes -->
+                </div>
+            </div>
+            <div class="card-info">
+                Record important tasks that need to be done later. Use this list to help you fill out your Today card.
+            </div>
         </div>
 
-        <div class="todo-stats">
-            <span id="todoCount">0 items left</span>
-            <button id="clearCompleted" class="clear-completed">Clear completed</button>
+        <div class="card-container">
+            <div class="card someday-card" id="someday-card">
+                <div class="card-front">
+                    <div class="card-title">
+                        <span>Someday</span>
+                    </div>
+                    <div class="card-signals">
+                        <div class="card-signal"></div>
+                        <div class="card-signal"></div>
+                        <div class="card-signal"></div>
+                    </div>
+                    <ul class="task-list" id="someday-tasks">
+                        <!-- Tasks will be added here dynamically -->
+                    </ul>
+                    <button class="add-task-btn" data-card="someday">+ Add task</button>
+                    <button class="flip-btn" data-card="someday">
+                        <span>NOTES</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 12H21M21 12L14 5M21 12L14 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="card-back">
+                    <!-- Empty back for notes -->
+                </div>
+            </div>
+            <div class="card-info">
+                Capture ideas, aspirations, and goals that you would someday like to accomplish.
+            </div>
         </div>
     </main>
 
+    <div class="dropdown-menu" id="status-dropdown">
+        <div class="dropdown-item" data-status="completed">
+            <div class="status-icon">
+                <div style="background-color: #333; width: 100%; height: 100%; border-radius: 50%;"></div>
+            </div>
+            <span>Complete</span>
+        </div>
+        <div class="dropdown-item" data-status="in-progress">
+            <div class="status-icon">
+                <div style="background-color: #333; width: 50%; height: 100%; border-radius: 50% 0 0 50%;"></div>
+            </div>
+            <span>In progress</span>
+        </div>
+        <div class="dropdown-item" data-status="delegated">
+            <div class="status-icon">
+                <span style="position: absolute; left: 4px;">→</span>
+            </div>
+            <span>Delegated</span>
+        </div>
+        <div class="dropdown-item" data-status="appointment">
+            <div class="status-icon">
+                <span style="position: absolute; left: 4px; top: -4px; font-size: 18px;">+</span>
+            </div>
+            <span>Appointment</span>
+        </div>
+        <div class="dropdown-item" data-status="none">
+            <div class="status-icon"></div>
+            <span>Clear</span>
+        </div>
+    </div>
+
     <footer>
-        <p>Deployed with Coolify • <span id="current-time">Loading...</span></p>
+        <p>In a world full of digital distractions, some things are simply better – Analog.</p>
+        <p><small>This is a digital homage to <a href="https://ugmonk.com/products/analog-the-simplest-productivity-system" target="_blank">Ugmonk's Analog</a> productivity system.</small></p>
     </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Element references
-            const body = document.body;
-            const todoInput = document.getElementById('todoInput');
-            const todoList = document.getElementById('todoList');
-            const todoCount = document.getElementById('todoCount');
-            const clearCompletedBtn = document.getElementById('clearCompleted');
-            const priorityBtns = document.querySelectorAll('.priority-btn');
-            const themeToggle = document.getElementById('themeToggle');
-            
-            // State
-            let todos = JSON.parse(localStorage.getItem('todos')) || [];
-            let selectedPriority = 'medium'; // Default priority
-            
-            // Set theme based on user preference or previous selection
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            setTheme(savedTheme);
-            
-            // Initialize
-            renderTodos();
-            updateCount();
-            
-            // Theme toggle
-            themeToggle.addEventListener('click', function() {
-                const currentTheme = body.classList.contains('light-mode') ? 'light' : 'dark';
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                setTheme(newTheme);
-                localStorage.setItem('theme', newTheme);
+            // Set current date
+            const today = new Date();
+            document.querySelector('.card-date').textContent = today.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric' 
             });
             
-            function setTheme(theme) {
-                if (theme === 'dark') {
-                    body.classList.remove('light-mode');
-                    body.classList.add('dark-mode');
-                    themeToggle.textContent = '☀️';
-                } else {
-                    body.classList.remove('dark-mode');
-                    body.classList.add('light-mode');
-                    themeToggle.textContent = '🌙';
-                }
-            }
+            // Initialize data
+            let tasks = JSON.parse(localStorage.getItem('analog-tasks')) || {
+                today: [],
+                next: [],
+                someday: []
+            };
             
-            // Set up priority selection
-            priorityBtns.forEach(btn => {
+            // Render initial tasks
+            renderTasks('today');
+            renderTasks('next');
+            renderTasks('someday');
+            
+            // Handle card flipping
+            document.querySelectorAll('.flip-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    selectedPriority = this.dataset.priority;
-                    priorityBtns.forEach(b => b.style.transform = 'scale(1)');
-                    this.style.transform = 'scale(1.3)';
+                    const cardId = this.dataset.card;
+                    document.getElementById(`${cardId}-card`).classList.toggle('flipped');
                 });
             });
             
-            // Find the medium priority button and select it by default
-            document.querySelector('.priority-btn.medium').style.transform = 'scale(1.3)';
+            // Handle add task buttons
+            document.querySelectorAll('.add-task-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const cardType = this.dataset.card;
+                    addNewTask(cardType);
+                });
+            });
             
-            // Add new todo on Enter key
-            todoInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && this.value.trim()) {
-                    addTodo(this.value.trim(), selectedPriority);
-                    this.value = '';
+            // Status dropdown position tracking
+            let currentTaskIndicator = null;
+            
+            // Handle task status indicator clicks
+            document.addEventListener('click', function(e) {
+                const statusDropdown = document.getElementById('status-dropdown');
+                
+                // If clicking outside the dropdown, close it
+                if (statusDropdown.classList.contains('active') && 
+                    !statusDropdown.contains(e.target) && 
+                    !e.target.classList.contains('task-indicator')) {
+                    statusDropdown.classList.remove('active');
+                    return;
+                }
+                
+                // If clicking on a task indicator, show dropdown
+                if (e.target.classList.contains('task-indicator')) {
+                    currentTaskIndicator = e.target;
+                    const rect = e.target.getBoundingClientRect();
+                    statusDropdown.style.top = `${rect.top + window.scrollY + 25}px`;
+                    statusDropdown.style.left = `${rect.left + window.scrollX - 60}px`;
+                    statusDropdown.classList.add('active');
                 }
             });
             
-            // Clear completed todos
-            clearCompletedBtn.addEventListener('click', function() {
-                todos = todos.filter(todo => !todo.completed);
-                saveTodos();
-                renderTodos();
-                updateCount();
+            // Handle dropdown item selection
+            document.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    if (!currentTaskIndicator) return;
+                    
+                    const status = this.dataset.status;
+                    const taskItem = currentTaskIndicator.closest('.task-item');
+                    const taskId = parseInt(taskItem.dataset.id);
+                    const taskList = currentTaskIndicator.closest('.task-list');
+                    const cardType = taskList.id.split('-')[0]; // 'today', 'next', or 'someday'
+                    
+                    updateTaskStatus(cardType, taskId, status);
+                    document.getElementById('status-dropdown').classList.remove('active');
+                });
             });
             
-            // Add a new todo
-            function addTodo(text, priority) {
-                const newTodo = {
+            // Function to render tasks for a specific card
+            function renderTasks(cardType) {
+                const taskList = document.getElementById(`${cardType}-tasks`);
+                taskList.innerHTML = '';
+                
+                tasks[cardType].forEach((task, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'task-item';
+                    li.dataset.id = task.id;
+                    
+                    const indicator = document.createElement('div');
+                    indicator.className = 'task-indicator';
+                    
+                    const statusEl = document.createElement('div');
+                    statusEl.className = `task-status ${task.status || ''}`;
+                    indicator.appendChild(statusEl);
+                    
+                    const textInput = document.createElement('input');
+                    textInput.type = 'text';
+                    textInput.className = `task-text ${task.status === 'completed' ? 'completed' : ''}`;
+                    textInput.value = task.text;
+                    textInput.placeholder = 'Enter task...';
+                    
+                    textInput.addEventListener('change', function() {
+                        updateTaskText(cardType, task.id, this.value);
+                    });
+                    
+                    textInput.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            this.blur();
+                            addNewTask(cardType);
+                        }
+                    });
+                    
+                    li.appendChild(indicator);
+                    li.appendChild(textInput);
+                    taskList.appendChild(li);
+                });
+            }
+            
+            // Function to add a new task
+            function addNewTask(cardType) {
+                const newTask = {
                     id: Date.now(),
-                    text: text,
-                    completed: false,
-                    priority: priority || 'medium'
+                    text: '',
+                    status: ''
                 };
                 
-                todos.unshift(newTodo); // Add to beginning of array for Clear-like behavior
-                saveTodos();
-                renderTodos();
-                updateCount();
-            }
-            
-            // Render all todos
-            function renderTodos() {
-                todoList.innerHTML = '';
+                tasks[cardType].push(newTask);
+                saveTasks();
+                renderTasks(cardType);
                 
-                todos.forEach(todo => {
-                    const li = document.createElement('li');
-                    li.className = `todo-item priority-${todo.priority} ${todo.completed ? 'completed' : ''}`;
-                    li.setAttribute('data-id', todo.id);
-                    
-                    li.innerHTML = `
-                        <div class="priority-indicator"></div>
-                        <div class="todo-text">${todo.text}</div>
-                        <div class="todo-actions">
-                            <button class="delete-btn">×</button>
-                        </div>
-                    `;
-                    
-                    todoList.appendChild(li);
-                    
-                    // Add click event to toggle completion
-                    li.addEventListener('click', function(e) {
-                        if (!e.target.classList.contains('delete-btn')) {
-                            const id = parseInt(this.getAttribute('data-id'));
-                            toggleTodoCompletion(id);
-                        }
-                    });
-                    
-                    // Add delete button handler
-                    const deleteBtn = li.querySelector('.delete-btn');
-                    deleteBtn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const id = parseInt(li.getAttribute('data-id'));
-                        deleteTodo(id);
-                    });
-                    
-                    // Add swipe functionality
-                    let startX;
-                    let currentX;
-                    
-                    li.addEventListener('touchstart', function(e) {
-                        startX = e.touches[0].clientX;
-                    });
-                    
-                    li.addEventListener('touchmove', function(e) {
-                        currentX = e.touches[0].clientX;
-                        const diff = startX - currentX;
-                        
-                        // Only allow left swipe (positive diff)
-                        if (diff > 0) {
-                            this.style.transform = `translateX(-${diff}px)`;
-                            this.style.opacity = 1 - (diff / 200);
-                        }
-                    });
-                    
-                    li.addEventListener('touchend', function() {
-                        const diff = startX - currentX;
-                        
-                        if (diff > 100) { // If swiped far enough
-                            this.style.transform = 'translateX(-100%)';
-                            this.style.opacity = '0';
-                            
-                            setTimeout(() => {
-                                const id = parseInt(this.getAttribute('data-id'));
-                                deleteTodo(id);
-                            }, 300);
-                        } else {
-                            // Reset position
-                            this.style.transform = 'translateX(0)';
-                            this.style.opacity = '1';
-                        }
-                    });
-                });
-            }
-            
-            // Toggle todo completion status
-            function toggleTodoCompletion(id) {
-                const todoIndex = todos.findIndex(todo => todo.id === id);
-                if (todoIndex !== -1) {
-                    todos[todoIndex].completed = !todos[todoIndex].completed;
-                    saveTodos();
-                    renderTodos();
-                    updateCount();
+                // Focus the newly added task
+                const taskList = document.getElementById(`${cardType}-tasks`);
+                const newTaskItem = taskList.lastChild;
+                if (newTaskItem) {
+                    const textInput = newTaskItem.querySelector('.task-text');
+                    if (textInput) textInput.focus();
                 }
             }
             
-            // Delete a todo
-            function deleteTodo(id) {
-                todos = todos.filter(todo => todo.id !== id);
-                saveTodos();
-                renderTodos();
-                updateCount();
+            // Function to update task text
+            function updateTaskText(cardType, taskId, newText) {
+                const taskIndex = tasks[cardType].findIndex(t => t.id === taskId);
+                if (taskIndex !== -1) {
+                    tasks[cardType][taskIndex].text = newText;
+                    saveTasks();
+                }
             }
             
-            // Update the todo count
-            function updateCount() {
-                const remainingCount = todos.filter(todo => !todo.completed).length;
-                todoCount.textContent = `${remainingCount} item${remainingCount !== 1 ? 's' : ''} left`;
+            // Function to update task status
+            function updateTaskStatus(cardType, taskId, status) {
+                const taskIndex = tasks[cardType].findIndex(t => t.id === taskId);
+                if (taskIndex !== -1) {
+                    tasks[cardType][taskIndex].status = status === 'none' ? '' : status;
+                    saveTasks();
+                    renderTasks(cardType);
+                }
             }
             
-            // Save todos to localStorage
-            function saveTodos() {
-                localStorage.setItem('todos', JSON.stringify(todos));
+            // Save tasks to localStorage
+            function saveTasks() {
+                localStorage.setItem('analog-tasks', JSON.stringify(tasks));
             }
-            
-            // Display current time
-            function updateTime() {
-                const timeElement = document.getElementById('current-time');
-                timeElement.textContent = new Date().toLocaleString();
-            }
-            
-            updateTime();
-            setInterval(updateTime, 1000);
         });
     </script>
 </body>
