@@ -151,6 +151,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            overflow-y: auto;
         }
         
         .task-item {
@@ -234,19 +235,29 @@
             top: -4px;
         }
         
-        .add-task-btn {
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .add-task-btn, .clear-completed-btn {
             background: none;
             border: none;
             cursor: pointer;
             font-size: 0.9rem;
             color: #999;
             padding: 5px;
-            margin-top: 5px;
             text-align: left;
         }
         
-        .add-task-btn:hover {
+        .add-task-btn:hover, .clear-completed-btn:hover {
             color: var(--text-color);
+        }
+        
+        .clear-completed-btn {
+            font-size: 0.8rem;
         }
         
         .flip-btn {
@@ -354,7 +365,10 @@
                     <ul class="task-list" id="today-tasks">
                         <!-- Tasks will be added here dynamically -->
                     </ul>
-                    <button class="add-task-btn" data-card="today">+ Add task</button>
+                    <div class="card-actions">
+                        <button class="add-task-btn" data-card="today">+ Add task</button>
+                        <button class="clear-completed-btn" data-card="today">Clear completed</button>
+                    </div>
                     <button class="flip-btn" data-card="today">
                         <span>NOTES</span>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -385,7 +399,10 @@
                     <ul class="task-list" id="next-tasks">
                         <!-- Tasks will be added here dynamically -->
                     </ul>
-                    <button class="add-task-btn" data-card="next">+ Add task</button>
+                    <div class="card-actions">
+                        <button class="add-task-btn" data-card="next">+ Add task</button>
+                        <button class="clear-completed-btn" data-card="next">Clear completed</button>
+                    </div>
                     <button class="flip-btn" data-card="next">
                         <span>NOTES</span>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -416,7 +433,10 @@
                     <ul class="task-list" id="someday-tasks">
                         <!-- Tasks will be added here dynamically -->
                     </ul>
-                    <button class="add-task-btn" data-card="someday">+ Add task</button>
+                    <div class="card-actions">
+                        <button class="add-task-btn" data-card="someday">+ Add task</button>
+                        <button class="clear-completed-btn" data-card="someday">Clear completed</button>
+                    </div>
                     <button class="flip-btn" data-card="someday">
                         <span>NOTES</span>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -507,6 +527,14 @@
                 });
             });
             
+            // Handle clear completed buttons
+            document.querySelectorAll('.clear-completed-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const cardType = this.dataset.card;
+                    clearCompletedTasks(cardType);
+                });
+            });
+            
             // Status dropdown position tracking
             let currentTaskIndicator = null;
             
@@ -586,6 +614,9 @@
                     li.appendChild(textInput);
                     taskList.appendChild(li);
                 });
+                
+                // Update the visibility of clear completed button
+                updateClearCompletedButton(cardType);
             }
             
             // Function to add a new task
@@ -615,6 +646,7 @@
                 if (taskIndex !== -1) {
                     tasks[cardType][taskIndex].text = newText;
                     saveTasks();
+                    updateClearCompletedButton(cardType);
                 }
             }
             
@@ -625,6 +657,36 @@
                     tasks[cardType][taskIndex].status = status === 'none' ? '' : status;
                     saveTasks();
                     renderTasks(cardType);
+                }
+            }
+            
+            // Function to clear completed tasks
+            function clearCompletedTasks(cardType) {
+                // Filter out tasks marked as completed
+                tasks[cardType] = tasks[cardType].filter(task => task.status !== 'completed');
+                saveTasks();
+                renderTasks(cardType);
+                
+                // Show a brief confirmation
+                const btn = document.querySelector(`.clear-completed-btn[data-card="${cardType}"]`);
+                const originalText = btn.textContent;
+                btn.textContent = 'Cleared!';
+                btn.disabled = true;
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }, 1000);
+            }
+            
+            // Function to update clear completed button visibility
+            function updateClearCompletedButton(cardType) {
+                const hasCompletedTasks = tasks[cardType].some(task => task.status === 'completed');
+                const btn = document.querySelector(`.clear-completed-btn[data-card="${cardType}"]`);
+                
+                if (hasCompletedTasks) {
+                    btn.style.visibility = 'visible';
+                } else {
+                    btn.style.visibility = 'hidden';
                 }
             }
             
