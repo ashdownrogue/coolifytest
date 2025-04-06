@@ -3,240 +3,458 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coolify Todo App</title>
+    <title>Clear-Style Todo App</title>
     <style>
-        body {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
-            line-height: 1.6;
-            color: #333;
         }
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #eee;
-        }
-        footer {
-            margin-top: 3rem;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #666;
-            border-top: 1px solid #eee;
-            padding-top: 1rem;
-        }
-        button {
-            background-color: #4CAF50;
-            border: none;
+        
+        body {
+            background: linear-gradient(135deg, #ff5f6d, #ffc371);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
             color: white;
-            padding: 8px 16px;
+            line-height: 1.6;
+        }
+        
+        header {
+            padding: 2rem;
             text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 14px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 4px;
         }
-        button.delete {
-            background-color: #f44336;
+        
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
         }
-        .todo-container {
-            margin-bottom: 2rem;
-            background-color: #f9f9f9;
-            border-radius: 8px;
+        
+        header p {
+            opacity: 0.8;
+            font-size: 1rem;
+        }
+        
+        footer {
+            text-align: center;
             padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 0.9rem;
+            opacity: 0.7;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
         }
-        .todo-form {
-            display: flex;
-            margin-bottom: 1rem;
+        
+        .todo-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 0 1rem;
         }
+        
+        .todo-input-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
         .todo-input {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            outline: none;
+            backdrop-filter: blur(10px);
         }
+        
+        .todo-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
         .todo-list {
             list-style: none;
-            padding: 0;
+            perspective: 1000px;
         }
+        
         .todo-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 0.5rem;
+            padding: 1rem;
+            border-radius: 8px;
             display: flex;
             align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            transform-origin: center left;
+            animation: fadeIn 0.3s forwards;
         }
-        .todo-item:last-child {
-            border-bottom: none;
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .todo-checkbox {
-            margin-right: 10px;
+        
+        .todo-item.priority-high {
+            background: rgba(255, 100, 100, 0.3);
         }
+        
+        .todo-item.priority-medium {
+            background: rgba(255, 165, 0, 0.3);
+        }
+        
+        .todo-item.priority-low {
+            background: rgba(100, 255, 100, 0.3);
+        }
+        
+        .todo-item.completed {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+        
         .todo-text {
             flex: 1;
+            font-size: 1.1rem;
+            padding: 0 0.5rem;
+            word-break: break-word;
         }
-        .completed {
-            text-decoration: line-through;
-            color: #888;
+        
+        .todo-actions {
+            display: flex;
+            align-items: center;
         }
+        
+        .todo-actions button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.7;
+            margin-left: 0.5rem;
+            transition: opacity 0.2s;
+        }
+        
+        .todo-actions button:hover {
+            opacity: 1;
+        }
+        
+        .priority-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .priority-high .priority-indicator {
+            background-color: #ff4d4d;
+        }
+        
+        .priority-medium .priority-indicator {
+            background-color: #ffa500;
+        }
+        
+        .priority-low .priority-indicator {
+            background-color: #4caf50;
+        }
+        
         .todo-stats {
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             display: flex;
             justify-content: space-between;
+            color: rgba(255, 255, 255, 0.8);
             font-size: 0.9rem;
-            color: #666;
         }
+        
         .clear-completed {
             background: none;
             border: none;
-            color: #666;
+            color: white;
+            opacity: 0.8;
             cursor: pointer;
             font-size: 0.9rem;
+        }
+        
+        .clear-completed:hover {
+            opacity: 1;
             text-decoration: underline;
-            padding: 0;
+        }
+        
+        .priority-selector {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+        }
+        
+        .priority-btn {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            margin-left: 5px;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            transition: transform 0.2s, border 0.2s;
+        }
+        
+        .priority-btn:hover {
+            transform: scale(1.2);
+            border: 2px solid white;
+        }
+        
+        .priority-btn.high {
+            background-color: #ff4d4d;
+        }
+        
+        .priority-btn.medium {
+            background-color: #ffa500;
+        }
+        
+        .priority-btn.low {
+            background-color: #4caf50;
+        }
+        
+        .swipe-hint {
+            text-align: center;
+            margin-top: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .todo-item {
+                padding: 0.8rem;
+            }
+            
+            .todo-text {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Coolify Todo App</h1>
-        <p>A simple todo list application deployed with Coolify</p>
+        <h1>CLEAR</h1>
+        <p>Simple, gesture-based todo list</p>
     </header>
 
-    <main>
-        <div class="todo-container">
-            <div class="todo-form">
-                <input type="text" id="todoInput" class="todo-input" placeholder="What needs to be done?">
-                <button id="addTodo">Add</button>
+    <main class="todo-container">
+        <div class="todo-input-container">
+            <input type="text" id="todoInput" class="todo-input" placeholder="Add a new task...">
+            <div class="priority-selector">
+                <div class="priority-btn high" data-priority="high"></div>
+                <div class="priority-btn medium" data-priority="medium"></div>
+                <div class="priority-btn low" data-priority="low"></div>
             </div>
+        </div>
 
-            <ul id="todoList" class="todo-list">
-                <!-- Todo items will be added here dynamically -->
-            </ul>
+        <ul id="todoList" class="todo-list">
+            <!-- Todo items will be added here dynamically -->
+        </ul>
 
-            <div class="todo-stats">
-                <span id="todoCount">0 items left</span>
-                <button id="clearCompleted" class="clear-completed">Clear completed</button>
-            </div>
+        <div class="swipe-hint">
+            <p>Swipe left to delete • Tap to complete</p>
+        </div>
+
+        <div class="todo-stats">
+            <span id="todoCount">0 items left</span>
+            <button id="clearCompleted" class="clear-completed">Clear completed</button>
         </div>
     </main>
 
     <footer>
-        <p>This todo app was deployed using Coolify</p>
-        <p>Current time: <span id="current-time">Loading...</span></p>
+        <p>Deployed with Coolify • <span id="current-time">Loading...</span></p>
     </footer>
 
     <script>
-        // Todo app functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // Load todos from localStorage
-            let todos = JSON.parse(localStorage.getItem('todos')) || [];
-            
+            // Element references
             const todoInput = document.getElementById('todoInput');
             const todoList = document.getElementById('todoList');
             const todoCount = document.getElementById('todoCount');
+            const clearCompletedBtn = document.getElementById('clearCompleted');
+            const priorityBtns = document.querySelectorAll('.priority-btn');
             
-            // Initial render
+            // State
+            let todos = JSON.parse(localStorage.getItem('todos')) || [];
+            let selectedPriority = 'medium'; // Default priority
+            
+            // Initialize
             renderTodos();
             updateCount();
             
-            // Add new todo
-            document.getElementById('addTodo').addEventListener('click', function() {
-                addTodo();
+            // Set up priority selection
+            priorityBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    selectedPriority = this.dataset.priority;
+                    priorityBtns.forEach(b => b.style.transform = 'scale(1)');
+                    this.style.transform = 'scale(1.3)';
+                });
             });
             
-            // Handle Enter key
+            // Find the medium priority button and select it by default
+            document.querySelector('.priority-btn.medium').style.transform = 'scale(1.3)';
+            
+            // Add new todo on Enter key
             todoInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    addTodo();
+                if (e.key === 'Enter' && this.value.trim()) {
+                    addTodo(this.value.trim(), selectedPriority);
+                    this.value = '';
                 }
             });
             
             // Clear completed todos
-            document.getElementById('clearCompleted').addEventListener('click', function() {
+            clearCompletedBtn.addEventListener('click', function() {
                 todos = todos.filter(todo => !todo.completed);
                 saveTodos();
                 renderTodos();
                 updateCount();
             });
             
-            function addTodo() {
-                const text = todoInput.value.trim();
-                if (text) {
-                    todos.push({
-                        id: Date.now(),
-                        text: text,
-                        completed: false
+            // Add a new todo
+            function addTodo(text, priority) {
+                const newTodo = {
+                    id: Date.now(),
+                    text: text,
+                    completed: false,
+                    priority: priority || 'medium'
+                };
+                
+                todos.unshift(newTodo); // Add to beginning of array for Clear-like behavior
+                saveTodos();
+                renderTodos();
+                updateCount();
+            }
+            
+            // Render all todos
+            function renderTodos() {
+                todoList.innerHTML = '';
+                
+                todos.forEach(todo => {
+                    const li = document.createElement('li');
+                    li.className = `todo-item priority-${todo.priority} ${todo.completed ? 'completed' : ''}`;
+                    li.setAttribute('data-id', todo.id);
+                    
+                    li.innerHTML = `
+                        <div class="priority-indicator"></div>
+                        <div class="todo-text">${todo.text}</div>
+                        <div class="todo-actions">
+                            <button class="delete-btn">×</button>
+                        </div>
+                    `;
+                    
+                    todoList.appendChild(li);
+                    
+                    // Add click event to toggle completion
+                    li.addEventListener('click', function(e) {
+                        if (!e.target.classList.contains('delete-btn')) {
+                            const id = parseInt(this.getAttribute('data-id'));
+                            toggleTodoCompletion(id);
+                        }
                     });
-                    todoInput.value = '';
+                    
+                    // Add delete button handler
+                    const deleteBtn = li.querySelector('.delete-btn');
+                    deleteBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const id = parseInt(li.getAttribute('data-id'));
+                        deleteTodo(id);
+                    });
+                    
+                    // Add swipe functionality
+                    let startX;
+                    let currentX;
+                    
+                    li.addEventListener('touchstart', function(e) {
+                        startX = e.touches[0].clientX;
+                    });
+                    
+                    li.addEventListener('touchmove', function(e) {
+                        currentX = e.touches[0].clientX;
+                        const diff = startX - currentX;
+                        
+                        // Only allow left swipe (positive diff)
+                        if (diff > 0) {
+                            this.style.transform = `translateX(-${diff}px)`;
+                            this.style.opacity = 1 - (diff / 200);
+                        }
+                    });
+                    
+                    li.addEventListener('touchend', function() {
+                        const diff = startX - currentX;
+                        
+                        if (diff > 100) { // If swiped far enough
+                            this.style.transform = 'translateX(-100%)';
+                            this.style.opacity = '0';
+                            
+                            setTimeout(() => {
+                                const id = parseInt(this.getAttribute('data-id'));
+                                deleteTodo(id);
+                            }, 300);
+                        } else {
+                            // Reset position
+                            this.style.transform = 'translateX(0)';
+                            this.style.opacity = '1';
+                        }
+                    });
+                });
+            }
+            
+            // Toggle todo completion status
+            function toggleTodoCompletion(id) {
+                const todoIndex = todos.findIndex(todo => todo.id === id);
+                if (todoIndex !== -1) {
+                    todos[todoIndex].completed = !todos[todoIndex].completed;
                     saveTodos();
                     renderTodos();
                     updateCount();
                 }
             }
             
-            function renderTodos() {
-                todoList.innerHTML = '';
-                todos.forEach(todo => {
-                    const li = document.createElement('li');
-                    li.className = 'todo-item';
-                    li.innerHTML = `
-                        <input type="checkbox" class="todo-checkbox" data-id="${todo.id}" ${todo.completed ? 'checked' : ''}>
-                        <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
-                        <button class="delete" data-id="${todo.id}">Delete</button>
-                    `;
-                    todoList.appendChild(li);
-                });
-                
-                // Add event listeners for checkboxes
-                document.querySelectorAll('.todo-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', function() {
-                        const id = parseInt(this.getAttribute('data-id'));
-                        const todo = todos.find(t => t.id === id);
-                        if (todo) {
-                            todo.completed = this.checked;
-                            saveTodos();
-                            renderTodos();
-                            updateCount();
-                        }
-                    });
-                });
-                
-                // Add event listeners for delete buttons
-                document.querySelectorAll('.delete').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const id = parseInt(this.getAttribute('data-id'));
-                        todos = todos.filter(todo => todo.id !== id);
-                        saveTodos();
-                        renderTodos();
-                        updateCount();
-                    });
-                });
+            // Delete a todo
+            function deleteTodo(id) {
+                todos = todos.filter(todo => todo.id !== id);
+                saveTodos();
+                renderTodos();
+                updateCount();
             }
             
+            // Update the todo count
             function updateCount() {
                 const remainingCount = todos.filter(todo => !todo.completed).length;
                 todoCount.textContent = `${remainingCount} item${remainingCount !== 1 ? 's' : ''} left`;
             }
             
+            // Save todos to localStorage
             function saveTodos() {
                 localStorage.setItem('todos', JSON.stringify(todos));
             }
+            
+            // Display current time
+            function updateTime() {
+                const timeElement = document.getElementById('current-time');
+                timeElement.textContent = new Date().toLocaleString();
+            }
+            
+            updateTime();
+            setInterval(updateTime, 1000);
         });
-        
-        // Display current time
-        function updateTime() {
-            const timeElement = document.getElementById('current-time');
-            timeElement.textContent = new Date().toLocaleString();
-        }
-        
-        updateTime();
-        setInterval(updateTime, 1000);
     </script>
 </body>
 </html>
